@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: gamestore-api
+    runtime: docker
+    plan: free               # upgrade to "starter" or higher to use the disk below
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__GameStore
+        value: Data Source=/app/data/GameStore.db
+
+    # Persistent disk so the SQLite file survives restarts.
+    # NOTE: disks require a paid plan (Starter+). Remove this block if staying on the free tier.
+    disk:
+      name: gamestore-data
+      mountPath: /app/data
+      sizeGB: 1
