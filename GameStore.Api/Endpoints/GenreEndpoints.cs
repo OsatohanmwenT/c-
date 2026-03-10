@@ -8,7 +8,7 @@ public static class GenreEndpoints
 {
     public static RouteGroupBuilder MapGenreEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("genres");
+        var group = app.MapGroup("genres").WithTags("Genres");
 
         group.MapGet("/", async (GameStoreContext db) =>
         {
@@ -18,7 +18,9 @@ public static class GenreEndpoints
                 .ToListAsync();
 
             return Results.Ok(genres);
-        });
+        })
+        .WithSummary("Get all genres")
+        .WithDescription("Returns a list of all available game genres.");
 
         return group;
     }

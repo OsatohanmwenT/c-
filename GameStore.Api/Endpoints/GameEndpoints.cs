@@ -10,7 +10,7 @@ public static class GameEndpoints
 
     public static RouteGroupBuilder MapGameEndpoints(this WebApplication app)
     {
-        var group = app.MapGroup("games");
+        var group = app.MapGroup("games").WithTags("Games");
 
         group.MapGet("/", async (GameStoreContext db) =>
         {
@@ -23,7 +23,9 @@ public static class GameEndpoints
             )).AsNoTracking().ToListAsync();
 
             return Results.Ok(games);
-        });
+        })
+        .WithSummary("Get all games")
+        .WithDescription("Returns a list of all games including their genre.");
 
         group.MapGet("/{id}", async (int id, GameStoreContext db) =>
         {
@@ -37,7 +39,9 @@ public static class GameEndpoints
                 game.ReleaseDate
             ));
         })
-        .WithName(GetGameEndpointName);
+        .WithName(GetGameEndpointName)
+        .WithSummary("Get a game by ID")
+        .WithDescription("Returns the details of a specific game by its ID.");
 
         group.MapPost("/", async (CreateGameDto newGame, GameStoreContext db) =>
         {
@@ -61,12 +65,14 @@ public static class GameEndpoints
             );
 
             return Results.CreatedAtRoute(GetGameEndpointName, new { id = gameDetails.Id }, gameDetails);
-        });
+        })
+        .WithSummary("Create a new game")
+        .WithDescription("Creates a new game entry and returns its details.");
 
         group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext db) =>
         {
             var existingGame = await db.Games.FindAsync(id);
-            
+
             if (existingGame is null)
             {
                 return Results.NotFound();
@@ -79,7 +85,9 @@ public static class GameEndpoints
 
             await db.SaveChangesAsync();
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Update a game")
+        .WithDescription("Updates the details of an existing game by its ID.");
 
         group.MapDelete("/{id}", async (int id, GameStoreContext db) =>
         {
@@ -92,7 +100,9 @@ public static class GameEndpoints
             db.Games.Remove(game);
             await db.SaveChangesAsync();
             return Results.NoContent();
-        });
+        })
+        .WithSummary("Delete a game")
+        .WithDescription("Deletes a game by its ID.");
 
         return group;
     }
